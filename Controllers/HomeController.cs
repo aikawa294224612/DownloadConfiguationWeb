@@ -108,7 +108,7 @@ namespace DownloadConfiguationWeb.Controllers
 
             string jsonData = JsonConvert.SerializeObject(configuration);
 
-            string filePath = "C:\\Users\\polly.peng\\Downloads\\appsettings.json";
+            string filePath = "C:\\appsettings.json";
             using (StreamWriter streamWriter = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 streamWriter.Write(jsonData);
