@@ -1,0 +1,184 @@
+﻿@model Configuration
+
+<h3>Download Configuration</h3>
+
+<form action="/Home/CreateConfig" method="post">
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="Property1">Fhir Server Endpoint:</label>
+                <input type="text" id="endpoint" name="endpoint" class="form-control form-control-sm" value="@Model.FhirServerSetting.Endpoint">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">FHIR Server是否需要token: </label>
+                <input type="radio" name="needToken" value="true" checked> 是
+                <input type="radio" name="needToken" value="false"> 否
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property1">搜尋Resource:</label>
+                <select class="form-control" id="searchResource" name="searchResource">
+                    <option value="Composition" selected>Composition</option>
+                    <option value="Patient">Patient</option>
+                    <option value="Organization">Organization</option>
+                    <option value="Encounter">Encounter</option>
+                    <option>...</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">查詢參數:</label>
+                <input type="text" id="searchParameter" name="searchParameter" class="form-control form-control-sm" value="@Model.FhirServerSetting.Search.SearchParameter">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">排序欄位(不排序填null):</label>
+                <input type="text" id="orderBy" name="orderBy" class="form-control form-control-sm" value="@Model.FhirServerSetting.Search.OrderBy">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">匯出形式:</label>
+                <input type="radio" name="outputForm" value="excel"> Excel
+                <input type="radio" name="outputForm" value="csv" checked> CSV
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">匯出路徑:</label>
+                <input type="text" id="outputPlace" name="outputPlace" class="form-control form-control-sm" value="C:\">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">匯出檔名:</label>
+                <input type="text" id="fileName" name="fileName" class="form-control form-control-sm" value="@Model.Output.FileName">
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">匯出筆數(-1表全部匯出):</label>
+                <input type="number" id="outputNumber" name="outputNumber" class="form-control form-control-sm" value="10">
+            </div>
+        </div>
+    </div>
+    <div class="row">      
+        <div class="col">
+            <div class="form-group">
+                <label for="Property2">頁籤(Worksheet)名稱:</label>
+                <input type="text" id="workSheetName" name="workSheetName" class="form-control form-control-sm" value="@Model.Output.WorkSheetName">
+                <input type="text" id="tableIndex" name="tableIndex" class="form-control form-control-sm" hidden>
+            </div>
+        </div>
+    </div>
+    <table class="table" id="fhirSettings">
+        <thead>
+            <tr>
+                <th scope="col">Resource</th>
+                <th scope="col">Name</th>
+                <th scope="col">Composition路徑</th>
+                <th scope="col">Resource內路徑</th>
+                <th scope="col">欄位名稱</th>
+                <th scope="col">顯示</th>
+                <th scope="col">解碼</th>
+                <th scope="col">預設值</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var i=0; i< Model.ColumnsCustomized.Count; i++)
+                {
+                <tr>
+                    <td>
+                        <select id="resource-@i" name="resource-@i">
+                            <option value="">選擇Resource</option>
+                            <option value="Patient" selected="@(Model.ColumnsCustomized[i].Resource == "Patient")">Patient</option>
+                            <option value="Observation" selected="@(Model.ColumnsCustomized[i].Resource == "Observation")">Observation</option>
+                            <option value="Encounter" selected="@(Model.ColumnsCustomized[i].Resource == "Encounter")">Encounter</option>
+                            <option value="Practitioner" selected="@(Model.ColumnsCustomized[i].Resource == "Practitioner")">Practitioner</option>
+                            <option value="Organization" selected="@(Model.ColumnsCustomized[i].Resource == "Organization")">Organization</option>
+                            <option value="Condition" selected="@(Model.ColumnsCustomized[i].Resource == "Condition")">Condition</option>
+                            <option value="DiagnosticReport" selected="@(Model.ColumnsCustomized[i].Resource == "DiagnosticReport")">DiagnosticReport</option>
+                            <option value="Composition" selected="@(Model.ColumnsCustomized[i].Resource == "Composition")">Composition</option>
+                            <option>...</option>
+                        </select>
+                    </td>
+                    <td><input type="text" id="name-@i" name="name-@i" class="form-control form-control-sm" value="@Model.ColumnsCustomized[i].Name"></td>
+                    <td><input type="text" id="upper-@i" name="upper-@i" class="form-control form-control-sm" value="@Model.ColumnsCustomized[i].UpperPath"></td>
+                    <td><input type="text" id="resourcepath-@i" name="resourcepath-@i" class="form-control form-control-sm" value="@Model.ColumnsCustomized[i].ResourcePath"></td>
+                    <td><input type="text" id="colname-@i" name="colname-@i" class="form-control form-control-sm" value="@Model.ColumnsCustomized[i].ColName"></td>
+                    <td>
+                        @if (Model.ColumnsCustomized[i].Show)
+                        {
+                            <input type="checkbox" id="show-@i" name="show-@i" checked>
+                        }
+                        else
+                        {
+                            <input type="checkbox" id="show-@i" name="show-@i">
+                        }
+                    </td>
+                    <td>
+                        @if (Model.ColumnsCustomized[i].Decrypt)
+                        {
+                            <input type="checkbox" id="decrypt-@i" name="decrypt-@i" checked>
+                        }
+                        else
+                        {
+                            <input type="checkbox" id="decrypt-@i" name="decrypt-@i">
+                        }
+                    </td>
+                    <td><input type="text" id="default-@i" name="default-@i" class="form-control form-control-sm" value="@Model.ColumnsCustomized[i].DefaultValue"></td>
+                </tr>
+                }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-primary btn-sm" onclick="addRow()">新增</button>
+    <button type="submit" class="btn btn-success btn-sm" action="">產生Config檔</button>
+</form>
+<script>
+    function addRow() {
+        var table = document.getElementById("fhirSettings").getElementsByTagName('tbody')[0];
+        var rowCount = table.rows.length;
+
+        document.getElementById("tableIndex").value = rowCount;
+
+        var newRow = table.insertRow();
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2);
+        var cell4 = newRow.insertCell(3);
+        var cell5 = newRow.insertCell(4);
+        var cell6 = newRow.insertCell(5);
+        var cell7 = newRow.insertCell(6);
+        var cell8 = newRow.insertCell(7);
+
+        cell1.innerHTML = "<select id=\"resource-" + rowCount + "\" name=\"resource-" + rowCount + "\">" +
+            "<option value=\"\">選擇Resource</option>" +
+            "<option value=\"Patient\">Patient</option>" +
+            "<option value=\"Observation\">Observation</option>" +
+            "<option value=\"Encounter\">Encounter</option>" +
+            "<option value=\"Practitioner\">Practitioner</option>" +
+            "<option value=\"Organization\">Organization</option>" +
+            "<option value=\"Condition\">Condition</option>" +
+            "<option value=\"DiagnosticReport\">DiagnosticReport</option>" +
+            "<option value=\"Composition\">Composition</option>" +
+            "<option>...</option>" +
+            "</select>";
+        cell2.innerHTML = "<input type=\"text\" id=\"name-" + rowCount + "\" name=\"name-" + rowCount + "\" class=\"form-control form-control-sm\">";
+        cell3.innerHTML = "<input type=\"text\" id=\"upper-" + rowCount + "\" name=\"upper-" + rowCount + "\" class=\"form-control form-control-sm\">";
+        cell4.innerHTML = "<input type=\"text\" id=\"resourcepath-" + rowCount + "\" name=\"resourcepath-" + rowCount + "\" class=\"form-control form-control-sm\">";
+        cell5.innerHTML = "<input type=\"text\" id=\"colname-" + rowCount + "\" name=\"colname-" + rowCount + "\" class=\"form-control form-control-sm\">";
+        cell6.innerHTML = "<input type=\"checkbox\" id=\"show-" + rowCount + "\" name=\"show-" + rowCount + "\"checked>";
+        cell7.innerHTML = "<input type=\"checkbox\" id=\"decrypt-" + rowCount + "\" name=\"decrypt-" + rowCount + "\">";
+        cell8.innerHTML = "<input type=\"text\" id=\"default-" + rowCount + "\" name=\"default-" + rowCount + "\" class=\"form-control form-control-sm\">";
+    }
+</script>
+
